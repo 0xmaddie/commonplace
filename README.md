@@ -1,3 +1,5 @@
+**2022-06-30** im gonna start doing #dailycoding again
+
 **2022-06-23** i wanna make toy neural nets. it would be cool to use
 language model evolution for neural architecture search. also i wanna
 make a "foundation model" for a fantasy console like [pico
