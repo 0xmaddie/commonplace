@@ -3,6 +3,8 @@ import math
 import cairo
 import numpy as np
 
+import img
+
 tau = 2*np.pi
 
 def new_display(width, height):
@@ -41,49 +43,6 @@ def pendulum(
     ]) * factor
     point += residual
   return point
-
-def app_2022_06_30():
-  dspw = 2**8
-  dsph = 2**8
-  dsplen = 6
-  framerate = 15
-  frame_count = framerate*dsplen
-  dt = 1/framerate
-  img, ctx = new_display(dspw, dsph)
-  freq = np.array([1/1, 1/2, 1/3, 1/6])
-  rng = np.random.default_rng()
-  param = rng.choice(freq, (4, 4))
-  frame = 0
-
-  while frame < frame_count:
-    time = frame/framerate
-    set_color_space_cadet(ctx)
-    ctx.paint()
-
-    ctx.save()
-    ctx.translate(dspw/2, dsph/2)
-    ctx.scale(dspw/2, dsph/2)
-
-    window = 0.25
-    iterations = 512
-    for j in range(0, 4):
-      for i in range(0, iterations):
-        residual = (-window/2)+i*((1/iterations)*window)
-        x, y = pendulum(time+residual, param)
-        radius = 2/128
-        ctx.arc(x, y, radius, 0, tau)
-        set_color_super_pink(ctx)
-        ctx.fill()
-      if j%2 == 0:
-        ctx.scale(-1, 1)
-      else:
-        ctx.scale(1, -1)
-        
-    ctx.restore()
-
-    pixels = img.get_data()
-    sys.stdout.buffer.write(pixels)
-    frame += 1
 
 def app_2022_06_16():
   # An implementation of https://tixy.land, using a random residual
@@ -232,6 +191,78 @@ def app_2022_06_16():
     # Advance time by one frame.
     frame += 1
 
+def app_2022_06_30():
+  dspw = 2**8
+  dsph = 2**8
+  dsplen = 6
+  framerate = 15
+  frame_count = framerate*dsplen
+  dt = 1/framerate
+  img, ctx = new_display(dspw, dsph)
+  freq = np.array([1/1, 1/2, 1/3, 1/6])
+  rng = np.random.default_rng()
+  param = rng.choice(freq, (4, 4))
+  frame = 0
+
+  while frame < frame_count:
+    time = frame/framerate
+    set_color_space_cadet(ctx)
+    ctx.paint()
+
+    ctx.save()
+    ctx.translate(dspw/2, dsph/2)
+    ctx.scale(dspw/2, dsph/2)
+
+    window = 0.25
+    iterations = 512
+    for j in range(0, 4):
+      for i in range(0, iterations):
+        residual = (-window/2)+i*((1/iterations)*window)
+        x, y = pendulum(time+residual, param)
+        radius = 2/128
+        ctx.arc(x, y, radius, 0, tau)
+        set_color_super_pink(ctx)
+        ctx.fill()
+      if j%2 == 0:
+        ctx.scale(-1, 1)
+      else:
+        ctx.scale(1, -1)
+
+    ctx.restore()
+
+    pixels = img.get_data()
+    sys.stdout.buffer.write(pixels)
+    frame += 1
+
+def vec(value):
+  return np.array([value])
+
+def mat(*rows):
+  return np.array([row for row in rows])
+
+def app_2022_07_01_debug():
+  brush = img.BasicBrush(
+    background=set_color_space_cadet,
+    foreground=[
+      set_color_white,
+      set_color_super_pink,
+    ],
+  )
+  img.use_brush(brush)
+  center = vec([0, 0])
+  size   = vec([2/16])
+  color  = vec([0.5, 0.5])
+  while True:
+    img.clear()
+    img.dot(center, size, color)
+    yield
+
 if __name__ == '__main__':
-  app_2022_06_16()
-  #app_2022_06_30()
+  img.render(
+    app=app_2022_07_01_debug(),
+    size=vec([256, 256]),
+    framerate=15,
+    length=6,
+  )
+  # app_2022_06_16()
+  # app_2022_06_30()
