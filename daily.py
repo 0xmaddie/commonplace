@@ -240,27 +240,155 @@ def vec(value):
 def mat(*rows):
   return np.array([row for row in rows])
 
-def app_2022_07_01_debug():
-  brush = img.BasicBrush(
-    background=set_color_space_cadet,
+def app_2022_07_01():
+  pen_dark = img.BasicBrush(
+    background=img.color_black,
     foreground=[
-      set_color_white,
-      set_color_super_pink,
+      img.color_super_pink,
+      img.color_white,
     ],
   )
-  img.use_brush(brush)
+  pen_light = img.BasicBrush(
+    background=img.color_white,
+    foreground=[
+      img.color_super_pink,
+      img.color_black,
+    ],
+  )
+  image_brush = img.ImageBrush("bin/daily_2022-07-01.png")
+  rows = 64
+  cols = 64
   center = vec([0, 0])
-  size   = vec([2/16])
+  radius = vec([2/rows/2])
   color  = vec([0.5, 0.5])
-  while True:
-    img.clear()
-    img.dot(center, size, color)
-    yield
+  freq = np.array([1/1, 1/2, 1/3, 1/6])
+  phas = np.array([x/100 for x in range(0, 200)])
+  rng = np.random.default_rng()
+  xfreq = rng.choice(freq, (4, 1, 1))
+  xphas = rng.choice(phas, (4, 1, 1))
+  yfreq = rng.choice(freq, (4, 1, 1))
+  yphas = rng.choice(phas, (4, 1, 1))
+  pendulum_param = np.concatenate(
+    [xfreq, xphas, yfreq, yphas],
+    axis=2,
+  )
 
+  def draw_pendulum_group(
+      param=pendulum_param,
+      rows:int=128,
+      window:float=0.5,
+  ):
+    time = img.time()
+    for i in range(0, 4):
+      for point in img.pendulum(
+          time=time,
+          param=param,
+          rows=rows,
+          window=window,
+      ):
+        img.dot(point, radius=vec([2/128]))
+      if i%2 == 0:
+        img.scale(vec([-1, 1]))
+      else:
+        img.scale(vec([1, -1]))
+
+  while True:
+    img.use_brush(pen_dark)
+    img.clear()
+
+    img.save()
+    img.translate(vec([-0.5, -0.5]))
+    img.scale(vec([0.5, 0.5]))
+
+    img.use_brush(pen_dark)
+    img.box(size=vec([2, 2]))
+    img.scale(vec([0.98, 0.98]))
+    img.use_brush(pen_light)
+    img.box(size=vec([2, 2]))
+
+    # img.scale(vec([0.95, 0.95]))
+    # img.color_white()
+    # img.box(size=vec([2, 2]))
+    # img.scale(vec([0.95, 0.95]))
+
+    # img.use_brush(pen_dark)
+    draw_pendulum_group()
+    img.restore()
+
+    img.save()
+    img.translate(vec([0.5, 0.5]))
+    img.scale(vec([0.5, 0.5]))
+
+    img.use_brush(pen_dark)
+    img.box(size=vec([2, 2]))
+    img.scale(vec([0.98, 0.98]))
+    img.use_brush(pen_light)
+    img.box(size=vec([2, 2]))
+
+    # img.scale(vec([0.95, 0.95]))
+    # img.color_white()
+    # img.box(size=vec([2, 2]))
+    # img.scale(vec([0.95, 0.95]))
+
+    # img.use_brush(pen_dark)
+    draw_pendulum_group()
+    img.restore()
+
+    img.save()
+    img.translate(vec([-0.5, 0.5]))
+    img.scale(vec([0.5, 0.5]))
+
+    img.use_brush(pen_light)
+    img.box(size=vec([2, 2]))
+    img.scale(vec([0.98, 0.98]))
+    img.use_brush(pen_dark)
+    img.box(size=vec([2, 2]))
+
+    # img.scale(vec([0.95, 0.95]))
+    # img.color_black()
+    # img.box(size=vec([2, 2]))
+    # img.scale(vec([0.95, 0.95]))
+
+    img.use_brush(image_brush)
+    for row in range(0, rows):
+      for col in range(0, cols):
+        y = (row/rows)*2-1
+        x = (col/cols)*2-1
+        position = vec([x, y])
+        img.dot(position=position, radius=radius)
+    img.restore()
+
+    img.save()
+    img.translate(vec([0.5, -0.5]))
+    img.scale(vec([0.5, 0.5]))
+    img.scale(vec([-1, -1]))
+
+    img.use_brush(pen_light)
+    img.box(size=vec([2, 2]))
+    img.scale(vec([0.98, 0.98]))
+    img.use_brush(pen_dark)
+    img.box(size=vec([2, 2]))
+
+    # img.scale(vec([0.95, 0.95]))
+    # img.color_black()
+    # img.box(size=vec([2, 2]))
+    # img.scale(vec([0.95, 0.95]))
+
+    img.use_brush(image_brush)
+    for row in range(0, rows):
+      for col in range(0, cols):
+        y = (row/rows)*2-1
+        x = (col/cols)*2-1
+        position = vec([x, y])
+        img.dot(position=position, radius=radius)
+    img.restore()
+    yield
+    
 if __name__ == '__main__':
   img.render(
-    app=app_2022_07_01_debug(),
-    size=vec([256, 256]),
+    app=app_2022_07_01(),
+    # size=vec([256, 256]),
+    size=vec([1024,1024]),
     framerate=15,
     length=6,
   )

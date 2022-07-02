@@ -1,3 +1,7 @@
+**2022-07-01** daily. not done with this one, gonna add a flow field or something to it.
+
+![](./bin/daily_2022-07-01.gif)
+
 **2022-06-30** im gonna start doing #dailycoding again
 
 **2022-06-23** i wanna make toy neural nets. it would be cool to use
