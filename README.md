@@ -1,4 +1,11 @@
-**2022-07-01** daily. not done with this one, gonna add a flow field or something to it.
+**2022-07-07** refactor, put #dailycoding stuff in its own file.
+
+i want to use a form of unityped functional programming for 2d
+graphics. every value is a time-varying display rewrite, called a
+filter.
+
+**2022-07-01** daily. not done with this one, gonna add a flow field
+or something to it.
 
 ![](./bin/daily_2022-07-01.gif)
 
