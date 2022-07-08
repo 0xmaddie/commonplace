@@ -26,22 +26,6 @@ def set_color_white(ctx: cairo.Context):
 def relu(x):
   return np.maximum(x, 0)
 
-def pendulum(
-  time: float,
-  param: np.ndarray,
-) -> np.ndarray:
-  height, width = param.shape
-  factor = 1/height
-  point = np.array([0.0, 0.0])
-  for row in param:
-    xfreq, xphase, yfreq, yphase = row
-    residual = np.array([
-      np.cos(time*xfreq*tau+xphase),
-      np.sin(time*yfreq*tau+yphase),
-    ]) * factor
-    point += residual
-  return point
-
 if __name__ == '__main__':
   # An implementation of https://tixy.land, using a random residual
   # network instead of a JavaScript function.
