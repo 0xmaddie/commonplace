@@ -2,8 +2,11 @@ import sys
 import math
 import cairo
 import numpy as np
+import opensimplex as simplex
 
-TAU = 2*math.pi
+tau = 2*math.pi
+
+PALETTE = [{"name":"Pastel Pink","hex":"e89e9f","rgb":[232,158,159],"cmyk":[0,32,31,9],"hsb":[359,32,91],"hsl":[359,62,76],"lab":[72,28,11]},{"name":"Lavender Blush","hex":"ede3e4","rgb":[237,227,228],"cmyk":[0,4,4,7],"hsb":[354,4,93],"hsl":[354,22,91],"lab":[91,4,1]},{"name":"Outer Space Crayola","hex":"31393c","rgb":[49,57,60],"cmyk":[18,5,0,76],"hsb":[196,18,24],"hsl":[196,10,21],"lab":[23,-3,-3]}]
 
 _surface   = None
 _context   = None
@@ -40,6 +43,7 @@ def use_brush(brush):
   _brush = brush
 
 def draw_dot(lx, ly, lsize):
+  """
   for sprite in _sprite:
     rx, ry, rsize = sprite
     dx = lx-rx
@@ -49,6 +53,7 @@ def draw_dot(lx, ly, lsize):
     if actual_dist <= collide_dist:
       return
   _sprite.append((lx, ly, lsize))
+  """
   _brush.draw_dot(lx, ly, lsize)
 
 def set_color_white():
@@ -56,6 +61,24 @@ def set_color_white():
 
 def set_color_black():
   _context.set_source_rgb(0, 0, 0)
+
+def set_color_super_pink():
+  _context.set_source_rgb(0.839, 0.360, 0.678)
+
+def set_color_pastel_pink():
+  red, green, blue = PALETTE[0]['rgb']
+  _context.set_source_rgb(
+    red/255, green/255, blue/255)
+
+def set_color_lavender_blush():
+  red, green, blue = PALETTE[1]['rgb']
+  _context.set_source_rgb(
+    red/255, green/255, blue/255)
+
+def set_color_outer_space_crayola():
+  red, green, blue = PALETTE[2]['rgb']
+  _context.set_source_rgb(
+    red/255, green/255, blue/255)
 
 def render(
   app,
@@ -76,8 +99,7 @@ def render(
     height,
   )
   _context = cairo.Context(_surface)
-  _brush = BasicBrush(
-    set_color_white, set_color_black)
+  _brush = brush_bw
   _frame = 0
   _framerate = framerate
   while _frame < _framerate*length:
@@ -112,7 +134,35 @@ class BasicBrush:
   def draw_dot(self, x, y, radius):
     _context.new_path()
     self.fg_func()
-    _context.arc(x, y, radius, 0, TAU)
+    _context.arc(x, y, radius, 0, tau)
+    _context.fill()
+
+class ExpertBrush:
+  def __init__(self):
+    pass
+
+  def clear(self):
+    set_color_outer_space_crayola()
+    _context.paint()
+    set_color_lavender_blush()
+    _context.new_path()
+    _context.set_line_width(2/256)
+    _context.rectangle(
+      -0.95, -0.95, 2*0.95, 2*0.95)
+    _context.stroke()
+
+  def draw_dot(self, x, y, radius):
+    _context.new_path()
+    noise = simplex.noise3(
+      tau*(time()/6),
+      x**2,
+      y**2,
+    )
+    if noise < 0.5:
+      set_color_pastel_pink()
+    else:
+      set_color_lavender_blush()
+    _context.arc(x, y, radius, 0, tau)
     _context.fill()
 
 class ImageBrush:
@@ -134,3 +184,15 @@ class VideoBrush:
   
   def draw_dot(self, x, y, radius):
     pass
+
+brush_bw = BasicBrush(
+  set_color_white, set_color_black)
+brush_super_pink = BasicBrush(
+  set_color_super_pink, set_color_black)
+brush_pastel_pink = BasicBrush(
+  set_color_pastel_pink,
+  set_color_outer_space_crayola)
+brush_lavender_blush = BasicBrush(
+  set_color_lavender_blush,
+  set_color_outer_space_crayola)
+brush_expert = ExpertBrush()
