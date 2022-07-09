@@ -1,3 +1,9 @@
+**2022-07-08** fixed-size representations are easier than
+variable-size representations. i want a fixed-size representation for
+program synthesis. using a fixed-size sequence of tokens seems wrong;
+that space of programs is almost accidental, because some tokens are
+boilerplate. an adjacency matrix seems like a better place to start.
+
 **2022-07-07** refactor, put #dailycoding stuff in its own file.
 
 i want to use a form of unityped functional programming for 2d
