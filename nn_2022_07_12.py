@@ -39,14 +39,11 @@ class _Eval:
     return value
 
 def _norm(value: np.ndarray) -> np.ndarray:
-  # not sure if this is correct. im a little confused about batch norm
-  # vs layer norm. i should also be using jax which might help, but it
-  # doesnt run on an rpi
-  _, dim = value.shape
+  dim = value.shape[-1]
   gain = use_param((1, dim))
   bias = use_param((1, dim))
-  mean = np.mean(value)
-  stddev = np.std(value)
+  mean = np.mean(value, axis=-1, keepdims=True)
+  stddev = np.std(value, axis=-1, keepdims=True)
   epsilon = 1e-5
   target = (value-mean)/(stddev+epsilon)
   return gain*target+bias
@@ -55,17 +52,18 @@ def _solu(value: np.ndarray) -> np.ndarray:
   return _norm(value*softmax(value))
 
 def _full(value: np.ndarray) -> np.ndarray:
-  _, dim = value.shape
+  dim = value.shape[-1]
   spin = use_param((dim, dim))
   bias = use_param((1, dim))
   return _solu(value@spin+bias)
 
 def _attn(value: np.ndarray) -> np.ndarray:
-  _, dim = value.shape
+  dim = value.shape[-1]
   Q = use_param((dim, dim))
   K = use_param((dim, dim))
   V = use_param((dim, dim))
   q, k, v = value@Q, value@K, value@V
+  # could you layer norm here instead of dividing by sqrt(dim)?
   energy = (q@k.T)/np.sqrt(dim)
   scores = softmax(energy)
   return scores@v
