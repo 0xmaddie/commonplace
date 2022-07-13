@@ -100,3 +100,32 @@ def eval(
   target = model(source)
   _dynamic_scope = None
   return target
+
+def tokens_from_image(
+  img: np.ndarray,
+  blk_shape,
+) -> np.ndarray:
+  img_hh, img_ww, img_dd = img.shape
+  blk_hh, blk_ww, blk_dd = blk_shape
+  tmp_hh = img_hh//blk_hh
+  tmp_ww = img_ww//blk_ww
+  tmp_dd = img_dd//blk_dd
+  tmp = np.reshape(img, (tmp_hh, blk_hh, tmp_ww, blk_ww, tmp_dd, blk_dd))
+  tmp = np.transpose(tmp, [0, 2, 4, 1, 3, 5])
+  token = np.reshape(tmp, (tmp_hh*tmp_ww*tmp_dd, blk_hh*blk_ww*blk_dd))
+  return token
+
+def image_from_tokens(
+  token: np.ndarray,
+  img_shape,
+  blk_shape,
+) -> np.ndarray:
+  img_hh, img_ww, img_dd = img_shape
+  blk_hh, blk_ww, blk_dd = blk_shape
+  tmp_hh = img_hh//blk_hh
+  tmp_ww = img_ww//blk_ww
+  tmp_dd = img_dd//blk_dd
+  tmp = np.reshape(token, (tmp_hh, tmp_ww, tmp_dd, blk_hh, blk_ww, blk_dd))
+  tmp = np.transpose(tmp, [0, 3, 1, 4, 2, 5])
+  img = np.reshape(tmp, (img_hh, img_ww, img_dd))
+  return img
