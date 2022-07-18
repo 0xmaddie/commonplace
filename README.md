@@ -1,3 +1,7 @@
+**2022-07-18** "daily"coding, reusing some old code
+
+![](./bin/daily_2022_07_18.jpg)
+
 **2022-07-08** fixed-size representations are easier than
 variable-size representations. i want a fixed-size representation for
 program synthesis. using a fixed-size sequence of tokens seems wrong;
